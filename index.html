@@ -587,7 +587,7 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); col
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  transition:all 0.1s;
+  transition:transform 0.05s, background 0.05s;
   user-select:none;
   position:relative;
   overflow:hidden;
@@ -640,7 +640,7 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); col
   letter-spacing:2px;
   cursor:pointer;
   text-align:center;
-  transition:all 0.15s;
+  transition:border-color 0.08s, background 0.08s, color 0.08s;
   user-select:none;
 }
 
@@ -860,7 +860,7 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); col
   font-family:'Bebas Neue',sans-serif;
   font-size:26px;
   color:var(--text);
-  transition:all 0.1s;
+  transition:transform 0.05s, background 0.05s;
   user-select:none;
 }
 
@@ -1007,7 +1007,7 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); col
   <div class="game-header">
     <button class="back-btn" onclick="confirmQuit()">←</button>
     <div class="game-title-bar" id="game-title-bar">501</div>
-    <button class="undo-btn" onclick="undoThrow()">↩ Angre</button>
+    <button class="undo-btn" onpointerdown="undoThrow()">↩ Angre</button>
   </div>
   <div class="players-bar" id="players-bar"></div>
   <div class="game-body" id="game-body">
@@ -1032,9 +1032,9 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); col
       <div class="checkout-hint-val" id="checkout-hint-val"></div>
     </div>
     <div class="multiplier-row">
-      <div class="mult-btn selected-mult" data-mult="1" onclick="setMult(1)">ENKEL</div>
-      <div class="mult-btn" data-mult="2" onclick="setMult(2)">DOUBLE</div>
-      <div class="mult-btn" data-mult="3" onclick="setMult(3)">TRIPLE</div>
+      <div class="mult-btn selected-mult" data-mult="1" onpointerdown="setMult(1)">ENKEL</div>
+      <div class="mult-btn" data-mult="2" onpointerdown="setMult(2)">DOUBLE</div>
+      <div class="mult-btn" data-mult="3" onpointerdown="setMult(3)">TRIPLE</div>
     </div>
     <div class="numpad" id="numpad"></div>
   </div>
@@ -1045,7 +1045,7 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); col
   <div class="game-header">
     <button class="back-btn" onclick="confirmQuit()">←</button>
     <div class="game-title-bar">CRICKET</div>
-    <button class="undo-btn" onclick="undoCricket()">↩ Angre</button>
+    <button class="undo-btn" onpointerdown="undoCricket()">↩ Angre</button>
   </div>
   <div class="players-bar" id="cricket-players-bar"></div>
   <div class="cricket-body">
@@ -1275,16 +1275,16 @@ function buildNumpad() {
   const nums = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
 
   let html = nums.map(n => `
-    <div class="num-btn" onclick="throwDart(${n})" onmousedown="addRipple(event,this)">
+    <div class="num-btn" onpointerdown="throwDart(${n})">
       ${n}
     </div>
   `).join('');
 
   // Special buttons
-  html += `<div class="num-btn bull" onclick="throwDart(25)" onmousedown="addRipple(event,this)">25<div class="num-btn-sub">BULL</div></div>`;
-  html += `<div class="num-btn bullseye" onclick="throwDart(50)" onmousedown="addRipple(event,this)">50<div class="num-btn-sub">BULL</div></div>`;
-  html += `<div class="num-btn miss" onclick="throwDart(0)">MISS</div>`;
-  html += `<div class="num-btn confirm-btn" id="confirm-btn" onclick="confirmTurn()" disabled>✓<div class="num-btn-sub">NESTE</div></div>`;
+  html += `<div class="num-btn bull" onpointerdown="throwDart(25)">25<div class="num-btn-sub">BULL</div></div>`;
+  html += `<div class="num-btn bullseye" onpointerdown="throwDart(50)">50<div class="num-btn-sub">BULL</div></div>`;
+  html += `<div class="num-btn miss" onpointerdown="throwDart(0)">MISS</div>`;
+  html += `<div class="num-btn confirm-btn" id="confirm-btn" onpointerdown="confirmTurn()" disabled>✓<div class="num-btn-sub">NESTE</div></div>`;
   // Fill remaining spots (5 columns × 5 rows = 25 total, used 20+4=24, +1 already = 25)
 
   numpad.innerHTML = html;
@@ -1297,8 +1297,15 @@ function setMult(m) {
   });
 }
 
+let autoConfirmTimer = null;
+function scheduleConfirm(ms) {
+  clearTimeout(autoConfirmTimer);
+  autoConfirmTimer = setTimeout(confirmTurn, ms);
+}
+
 function throwDart(baseVal) {
   if (G.currentThrows.length >= 3) return;
+  if (navigator.vibrate) navigator.vibrate(8);
   const val = baseVal === 25 || baseVal === 50 ? baseVal : baseVal * G.multiplier;
   const label = formatThrowLabel(baseVal, G.multiplier);
   G.currentThrows.push({ val, label, baseVal, mult: G.multiplier });
@@ -1322,10 +1329,10 @@ function throwDart(baseVal) {
   if (remaining < 0 || (G.doubleOut && remaining === 1)) {
     remEl.innerHTML = `<div class="bust-warning">💥 BUST!</div>`;
     // Auto-confirm after bust
-    setTimeout(() => confirmTurn(), 900);
+    scheduleConfirm(450);
   } else if (remaining === 0) {
     remEl.innerHTML = `<div class="remaining-after" style="color:var(--gold);font-size:18px">🏆 VINNER!</div>`;
-    setTimeout(() => confirmTurn(), 600);
+    scheduleConfirm(400);
   } else {
     remEl.innerHTML = `<div class="remaining-after">→ ${remaining} igjen</div>`;
   }
@@ -1346,7 +1353,7 @@ function throwDart(baseVal) {
   // Auto-confirm after 3 darts
   if (G.currentThrows.length === 3) {
     if (remaining >= 2 || remaining <= 0 || (G.doubleOut && remaining === 1)) {
-      setTimeout(() => confirmTurn(), 1200);
+      scheduleConfirm(500);
     }
   }
 
@@ -1376,6 +1383,7 @@ function updateCheckoutHint(remaining) {
 }
 
 function confirmTurn() {
+  clearTimeout(autoConfirmTimer);
   if (G.currentThrows.length === 0) return;
   const p = G.players[G.currentPlayer];
   const turnTotal = G.currentThrows.reduce((s, t) => s + t.val, 0);
@@ -1423,6 +1431,7 @@ function undoThrow() {
 }
 
 function clearTurn() {
+  clearTimeout(autoConfirmTimer);
   G.currentThrows = [];
   [0,1,2].forEach(i => {
     const chip = document.getElementById('throw' + i);
@@ -1500,7 +1509,7 @@ function renderCricketBoard() {
     <div class="cricket-row">
       <div class="cricket-num-cell ${num==='Bull'?'bullseye-row':''}">${num}</div>
       ${G.players.map((p,pi) => `
-        <div class="cricket-player-cell ${pi===G.cricketCurrentPlayer?'active-col':''}" id="crm-${pi}-${ni}" onclick="cricketMark(${pi},${ni})">
+        <div class="cricket-player-cell ${pi===G.cricketCurrentPlayer?'active-col':''}" id="crm-${pi}-${ni}" onpointerdown="cricketMark(${pi},${ni})">
           <div class="cricket-marks">${renderMarks(G.cricketMarks[pi][ni])}</div>
         </div>
       `).join('')}
@@ -1531,8 +1540,8 @@ function buildCricketNumpad() {
   const numpad = document.getElementById('cricket-numpad');
   const nums = [20,19,18,17,16,15,'Bull'];
   numpad.innerHTML = nums.map(n => `
-    <div class="cr-num-btn ${n==='Bull'?'cr-bull':''}" onclick="cricketThrow('${n}')">${n}</div>
-  `).join('') + `<div class="cr-num-btn cr-miss" onclick="cricketThrow('miss')">MISS</div>`;
+    <div class="cr-num-btn ${n==='Bull'?'cr-bull':''}" onpointerdown="cricketThrow('${n}')">${n}</div>
+  `).join('') + `<div class="cr-num-btn cr-miss" onpointerdown="cricketThrow('miss')">MISS</div>`;
 }
 
 function cricketThrow(num) {
@@ -1602,7 +1611,7 @@ function checkCricketAdvance() {
       G.cricketThrowsLeft = 3;
       renderCricketBoard();
       updateCricketPlayerBar();
-    }, 400);
+    }, 250);
   }
 }
 
