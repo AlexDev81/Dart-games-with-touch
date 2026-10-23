@@ -2,918 +2,18 @@
 <html lang="no">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dart">
+<meta name="theme-color" content="#0d0d0f">
 <title>Dart Scorer</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #0d0d0f;
-  --surface: #16161a;
-  --surface2: #1e1e24;
-  --border: rgba(255,255,255,0.07);
-  --accent: #e63946;
-  --accent2: #f4a261;
-  --green: #2dc653;
-  --blue: #4cc9f0;
-  --text: #f0f0f0;
-  --muted: #888899;
-  --gold: #ffd60a;
-  --r: 14px;
-  --r-sm: 8px;
-}
-
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
-
-html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Barlow',sans-serif; }
-
-/* ===== SCREENS ===== */
-.screen { position:absolute; inset:0; display:none; overflow:hidden; }
-.screen.active { display:flex; flex-direction:column; }
-
-/* ===== HOME SCREEN ===== */
-#home {
-  background: radial-gradient(ellipse at 30% 20%, rgba(230,57,70,0.12) 0%, transparent 55%),
-              radial-gradient(ellipse at 80% 80%, rgba(76,201,240,0.08) 0%, transparent 50%),
-              var(--bg);
-  align-items:center;
-  justify-content:center;
-  gap:32px;
-  padding:40px 24px;
-}
-
-.home-logo {
-  text-align:center;
-}
-
-.logo-icon { font-size:64px; line-height:1; margin-bottom:8px; filter:drop-shadow(0 0 20px rgba(230,57,70,0.6)); }
-
-.logo-title {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:72px;
-  letter-spacing:6px;
-  line-height:1;
-  background: linear-gradient(135deg, #fff 0%, var(--accent) 60%);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-
-.logo-sub {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:14px;
-  letter-spacing:4px;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin-top:4px;
-}
-
-.game-grid {
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:16px;
-  width:100%;
-  max-width:600px;
-}
-
-.game-card {
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r);
-  padding:28px 20px;
-  text-align:center;
-  cursor:pointer;
-  transition:all 0.18s ease;
-  position:relative;
-  overflow:hidden;
-  user-select:none;
-}
-
-.game-card::before {
-  content:'';
-  position:absolute;
-  inset:0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 60%);
-  pointer-events:none;
-}
-
-.game-card:active { transform:scale(0.96); }
-.game-card.featured { border-color:rgba(230,57,70,0.4); background:linear-gradient(145deg,rgba(230,57,70,0.1),var(--surface)); }
-.game-card.featured::after { content:'POPULÆR'; position:absolute; top:10px; right:10px; background:var(--accent); color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:1px; padding:2px 8px; border-radius:20px; }
-
-.game-icon { font-size:36px; margin-bottom:12px; line-height:1; }
-.game-name { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:800; letter-spacing:1px; }
-.game-desc { font-size:13px; color:var(--muted); margin-top:4px; line-height:1.4; }
-
-/* ===== SETUP SCREEN ===== */
-#setup {
-  background: var(--bg);
-  padding:0;
-}
-
-.setup-header {
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  padding:20px 24px;
-  display:flex;
-  align-items:center;
-  gap:16px;
-  flex-shrink:0;
-}
-
-.back-btn {
-  width:44px; height:44px;
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:var(--r-sm);
-  color:var(--text);
-  font-size:20px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-shrink:0;
-}
-
-.back-btn:active { opacity:0.6; }
-
-.setup-title {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:32px;
-  letter-spacing:2px;
-  flex:1;
-}
-
-.setup-body {
-  flex:1;
-  overflow-y:auto;
-  padding:24px;
-  display:flex;
-  flex-direction:column;
-  gap:24px;
-}
-
-.setup-section { display:flex; flex-direction:column; gap:12px; }
-
-.setup-label {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:var(--muted);
-}
-
-/* Score selector */
-.score-options {
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.score-opt {
-  flex:1;
-  min-width:80px;
-  padding:14px 8px;
-  background:var(--surface);
-  border:2px solid var(--border);
-  border-radius:var(--r-sm);
-  text-align:center;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:22px;
-  font-weight:700;
-  color:var(--text);
-  cursor:pointer;
-  transition:all 0.15s;
-  user-select:none;
-}
-
-.score-opt:active { transform:scale(0.93); }
-.score-opt.selected { border-color:var(--accent); background:rgba(230,57,70,0.15); color:var(--accent); }
-
-.custom-score-row {
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.text-input {
-  flex:1;
-  background:var(--surface);
-  border:2px solid var(--border);
-  border-radius:var(--r-sm);
-  padding:14px 16px;
-  color:var(--text);
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:22px;
-  font-weight:700;
-  outline:none;
-  transition:border-color 0.15s;
-}
-.text-input:focus { border-color:var(--accent); }
-.text-input::placeholder { color:var(--muted); }
-
-/* Players setup */
-.player-setup-list { display:flex; flex-direction:column; gap:10px; }
-
-.player-setup-row {
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.player-color-dot {
-  width:16px; height:16px;
-  border-radius:50%;
-  flex-shrink:0;
-}
-
-.player-input {
-  flex:1;
-  background:var(--surface);
-  border:2px solid var(--border);
-  border-radius:var(--r-sm);
-  padding:14px 16px;
-  color:var(--text);
-  font-family:'Barlow',sans-serif;
-  font-size:18px;
-  font-weight:600;
-  outline:none;
-  transition:border-color 0.15s;
-}
-.player-input:focus { border-color:var(--blue); }
-.player-input::placeholder { color:var(--muted); }
-
-.remove-player-btn {
-  width:44px; height:44px;
-  background:rgba(230,57,70,0.15);
-  border:1px solid rgba(230,57,70,0.3);
-  border-radius:var(--r-sm);
-  color:var(--accent);
-  font-size:20px;
-  cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  flex-shrink:0;
-}
-.remove-player-btn:active { opacity:0.6; }
-
-.add-player-btn {
-  padding:14px;
-  background:var(--surface);
-  border:2px dashed var(--border);
-  border-radius:var(--r-sm);
-  color:var(--muted);
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:16px;
-  font-weight:700;
-  letter-spacing:1px;
-  cursor:pointer;
-  transition:all 0.15s;
-  text-align:center;
-}
-.add-player-btn:active { background:var(--surface2); }
-
-.checkout-toggle {
-  display:flex;
-  align-items:center;
-  gap:14px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r-sm);
-  padding:16px;
-  cursor:pointer;
-}
-
-.toggle-switch {
-  width:52px; height:28px;
-  background:var(--surface2);
-  border-radius:14px;
-  position:relative;
-  flex-shrink:0;
-  transition:background 0.2s;
-  border:1px solid var(--border);
-}
-.toggle-switch.on { background:var(--green); border-color:var(--green); }
-.toggle-knob {
-  position:absolute;
-  top:3px; left:3px;
-  width:20px; height:20px;
-  border-radius:50%;
-  background:#fff;
-  transition:transform 0.2s;
-  box-shadow:0 2px 4px rgba(0,0,0,0.3);
-}
-.toggle-switch.on .toggle-knob { transform:translateX(24px); }
-.toggle-label { font-size:15px; color:var(--text); }
-.toggle-sub { font-size:12px; color:var(--muted); margin-top:2px; }
-
-.setup-footer {
-  padding:20px 24px;
-  flex-shrink:0;
-  background:var(--surface);
-  border-top:1px solid var(--border);
-}
-
-.start-btn {
-  width:100%;
-  padding:20px;
-  background:var(--accent);
-  border:none;
-  border-radius:var(--r);
-  color:#fff;
-  font-family:'Bebas Neue',sans-serif;
-  font-size:28px;
-  letter-spacing:3px;
-  cursor:pointer;
-  transition:all 0.15s;
-  box-shadow:0 4px 20px rgba(230,57,70,0.3);
-}
-.start-btn:active { transform:scale(0.97); box-shadow:0 2px 10px rgba(230,57,70,0.2); }
-.start-btn:disabled { background:var(--surface2); color:var(--muted); box-shadow:none; cursor:not-allowed; }
-
-/* ===== GAME SCREEN ===== */
-#game {
-  background: var(--bg);
-}
-
-.game-header {
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  padding:12px 16px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  flex-shrink:0;
-}
-
-.game-title-bar {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:22px;
-  letter-spacing:2px;
-  color:var(--muted);
-  flex:1;
-}
-
-.undo-btn {
-  padding:10px 18px;
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:var(--r-sm);
-  color:var(--text);
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:14px;
-  font-weight:700;
-  letter-spacing:1px;
-  cursor:pointer;
-}
-.undo-btn:active { opacity:0.6; }
-
-/* Players scoreboard */
-.players-bar {
-  display:flex;
-  gap:1px;
-  flex-shrink:0;
-  background:var(--border);
-}
-
-.player-score-panel {
-  flex:1;
-  background:var(--surface);
-  padding:14px 12px;
-  text-align:center;
-  position:relative;
-  transition:background 0.2s;
-  min-width:0;
-}
-
-.player-score-panel.active-player {
-  background:var(--surface2);
-}
-
-.player-score-panel.active-player::after {
-  content:'';
-  position:absolute;
-  bottom:0; left:0; right:0;
-  height:3px;
-  background:var(--accent);
-}
-
-.player-score-name {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  color:var(--muted);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  margin-bottom:4px;
-}
-
-.player-score-panel.active-player .player-score-name { color:var(--text); }
-
-.player-score-num {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:48px;
-  line-height:1;
-  letter-spacing:2px;
-}
-
-.player-score-panel.active-player .player-score-num { color:var(--accent); }
-
-.player-darts-left {
-  display:flex;
-  justify-content:center;
-  gap:4px;
-  margin-top:6px;
-}
-
-.dart-dot {
-  width:8px; height:8px;
-  border-radius:50%;
-  background:var(--muted);
-  opacity:0.3;
-}
-
-.dart-dot.thrown { opacity:1; background:var(--accent); }
-
-.player-turn-score {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:13px;
-  color:var(--muted);
-  margin-top:4px;
-  min-height:18px;
-}
-
-/* Game body: current throw area + numpad */
-.game-body {
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-
-.current-turn-area {
-  background:var(--surface2);
-  border-bottom:1px solid var(--border);
-  padding:16px 20px;
-  flex-shrink:0;
-}
-
-.turn-info {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:12px;
-}
-
-.turn-player-name {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:18px;
-  font-weight:700;
-  letter-spacing:1px;
-  text-transform:uppercase;
-}
-
-.turn-dart-num {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:14px;
-  color:var(--muted);
-  letter-spacing:1px;
-}
-
-.throws-display {
-  display:flex;
-  gap:10px;
-}
-
-.throw-chip {
-  flex:1;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r-sm);
-  padding:12px 8px;
-  text-align:center;
-}
-
-.throw-chip.filled {
-  border-color:rgba(230,57,70,0.4);
-  background:rgba(230,57,70,0.08);
-}
-
-.throw-chip.bust { border-color:rgba(230,57,70,0.8); background:rgba(230,57,70,0.2); }
-
-.throw-chip-label {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:11px;
-  font-weight:700;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin-bottom:4px;
-}
-
-.throw-chip-val {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:32px;
-  line-height:1;
-  color:var(--accent);
-}
-
-.throw-chip:not(.filled) .throw-chip-val { color:var(--muted); opacity:0.3; }
-
-.turn-total {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-top:12px;
-  padding-top:12px;
-  border-top:1px solid var(--border);
-}
-
-.turn-total-label {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:var(--muted);
-}
-
-.turn-total-val {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:28px;
-  color:var(--text);
-}
-
-.remaining-after {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:14px;
-  color:var(--green);
-  font-weight:600;
-}
-
-.bust-warning {
-  color:var(--accent);
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:14px;
-  font-weight:700;
-  letter-spacing:1px;
-}
-
-/* NUMPAD */
-.numpad {
-  flex:1;
-  display:grid;
-  grid-template-columns: repeat(5,1fr);
-  grid-template-rows: repeat(5,1fr);
-  gap:6px;
-  padding:12px;
-  overflow:hidden;
-}
-
-.num-btn {
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r-sm);
-  color:var(--text);
-  font-family:'Bebas Neue',sans-serif;
-  font-size:28px;
-  letter-spacing:1px;
-  cursor:pointer;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  transition:all 0.1s;
-  user-select:none;
-  position:relative;
-  overflow:hidden;
-}
-
-.num-btn:active { transform:scale(0.92); background:var(--surface2); }
-
-.num-btn.miss { color:var(--muted); font-size:20px; }
-.num-btn.double { border-color:rgba(76,201,240,0.4); color:var(--blue); }
-.num-btn.triple { border-color:rgba(253,214,10,0.4); color:var(--gold); }
-.num-btn.bull { border-color:rgba(45,198,83,0.4); color:var(--green); }
-.num-btn.bullseye { border-color:rgba(230,57,70,0.5); background:rgba(230,57,70,0.1); color:var(--accent); }
-.num-btn.confirm-btn {
-  background:var(--green);
-  border-color:var(--green);
-  color:#fff;
-  font-size:20px;
-  box-shadow:0 0 16px rgba(45,198,83,0.3);
-}
-.num-btn.confirm-btn:disabled { background:var(--surface2); border-color:var(--border); color:var(--muted); box-shadow:none; }
-
-.num-btn-sub {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  opacity:0.5;
-  margin-top:1px;
-}
-
-/* Multiplier row */
-.multiplier-row {
-  display:flex;
-  gap:6px;
-  padding:0 12px 6px;
-  flex-shrink:0;
-}
-
-.mult-btn {
-  flex:1;
-  padding:12px;
-  background:var(--surface);
-  border:2px solid var(--border);
-  border-radius:var(--r-sm);
-  color:var(--muted);
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:16px;
-  font-weight:700;
-  letter-spacing:2px;
-  cursor:pointer;
-  text-align:center;
-  transition:all 0.15s;
-  user-select:none;
-}
-
-.mult-btn.selected-mult { color:#fff; }
-.mult-btn[data-mult="1"].selected-mult { border-color:var(--text); background:rgba(255,255,255,0.1); }
-.mult-btn[data-mult="2"].selected-mult { border-color:var(--blue); background:rgba(76,201,240,0.15); color:var(--blue); }
-.mult-btn[data-mult="3"].selected-mult { border-color:var(--gold); background:rgba(253,214,10,0.12); color:var(--gold); }
-
-/* CHECKOUT HINT */
-.checkout-hint {
-  background:rgba(45,198,83,0.12);
-  border-top:1px solid rgba(45,198,83,0.25);
-  padding:10px 16px;
-  flex-shrink:0;
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.checkout-hint-label {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:12px;
-  font-weight:700;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:var(--green);
-  flex-shrink:0;
-}
-
-.checkout-hint-val {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:15px;
-  color:var(--text);
-  font-weight:600;
-}
-
-/* ===== WINNER SCREEN ===== */
-#winner {
-  background: radial-gradient(ellipse at 50% 30%, rgba(253,214,10,0.15) 0%, transparent 60%), var(--bg);
-  align-items:center;
-  justify-content:center;
-  gap:32px;
-  padding:40px 24px;
-  text-align:center;
-}
-
-.winner-trophy { font-size:96px; filter:drop-shadow(0 0 30px rgba(253,214,10,0.6)); animation:bounce 1s ease infinite alternate; }
-
-@keyframes bounce {
-  from { transform:translateY(0); }
-  to { transform:translateY(-16px); }
-}
-
-.winner-headline {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:24px;
-  letter-spacing:4px;
-  color:var(--muted);
-}
-
-.winner-name {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:80px;
-  letter-spacing:4px;
-  line-height:1;
-  background:linear-gradient(135deg, var(--gold) 0%, #ff8c00 100%);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-
-.winner-game {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:16px;
-  letter-spacing:2px;
-  color:var(--muted);
-}
-
-.winner-stats {
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r);
-  padding:24px;
-  width:100%;
-  max-width:400px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-
-.winner-stat {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.winner-stat-label { font-size:15px; color:var(--muted); }
-.winner-stat-val { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:700; }
-
-.winner-actions {
-  display:flex;
-  gap:12px;
-  width:100%;
-  max-width:400px;
-}
-
-.winner-btn {
-  flex:1;
-  padding:18px;
-  border:none;
-  border-radius:var(--r);
-  font-family:'Bebas Neue',sans-serif;
-  font-size:22px;
-  letter-spacing:2px;
-  cursor:pointer;
-  transition:all 0.15s;
-}
-
-.winner-btn:active { transform:scale(0.96); }
-.winner-btn.primary { background:var(--accent); color:#fff; box-shadow:0 4px 16px rgba(230,57,70,0.3); }
-.winner-btn.secondary { background:var(--surface); color:var(--text); border:1px solid var(--border); }
-
-/* ===== CRICKET GAME ===== */
-.cricket-body {
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-
-.cricket-scoreboard {
-  flex:1;
-  display:grid;
-  overflow:hidden;
-  gap:1px;
-  background:var(--border);
-}
-
-.cricket-row {
-  display:flex;
-  gap:1px;
-  background:var(--border);
-}
-
-.cricket-num-cell {
-  width:80px;
-  background:var(--surface);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-family:'Bebas Neue',sans-serif;
-  font-size:28px;
-  flex-shrink:0;
-}
-
-.cricket-num-cell.bullseye-row { color:var(--accent); }
-
-.cricket-player-cell {
-  flex:1;
-  background:var(--surface);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-}
-
-.cricket-player-cell.active-col { background:var(--surface2); }
-
-.cricket-marks {
-  display:flex;
-  gap:2px;
-  align-items:center;
-  justify-content:center;
-}
-
-.cricket-mark { font-size:24px; line-height:1; }
-.cricket-mark.scored { color:var(--accent); }
-.cricket-mark.empty { color:var(--surface); font-size:20px; }
-.cricket-mark.closed { color:var(--green); font-size:30px; }
-
-.cricket-score-row {
-  display:flex;
-  gap:1px;
-  background:var(--border);
-  flex-shrink:0;
-}
-
-.cricket-score-cell {
-  background:var(--surface2);
-  flex:1;
-  padding:10px;
-  text-align:center;
-}
-
-.cricket-score-cell:first-child { width:80px; flex:none; background:var(--surface); display:flex; align-items:center; justify-content:center; }
-
-.cricket-score-label { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
-.cricket-score-val { font-family:'Bebas Neue',sans-serif; font-size:28px; }
-
-/* CRICKET NUMPAD */
-.cricket-numpad {
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:6px;
-  padding:10px;
-  flex-shrink:0;
-  background:var(--bg);
-}
-
-.cr-num-btn {
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r-sm);
-  padding:14px 8px;
-  text-align:center;
-  cursor:pointer;
-  font-family:'Bebas Neue',sans-serif;
-  font-size:26px;
-  color:var(--text);
-  transition:all 0.1s;
-  user-select:none;
-}
-
-.cr-num-btn:active { transform:scale(0.93); }
-.cr-num-btn.cr-bull { color:var(--accent); border-color:rgba(230,57,70,0.4); }
-.cr-num-btn.cr-confirm { background:var(--green); border-color:var(--green); color:#fff; font-size:20px; }
-.cr-num-btn.cr-miss { color:var(--muted); font-size:18px; }
-
-/* Toast */
-.toast {
-  position:fixed;
-  bottom:80px;
-  left:50%;
-  transform:translateX(-50%) translateY(20px);
-  background:rgba(30,30,36,0.95);
-  border:1px solid var(--border);
-  border-radius:30px;
-  padding:12px 28px;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:16px;
-  font-weight:700;
-  letter-spacing:1px;
-  color:var(--text);
-  backdrop-filter:blur(10px);
-  opacity:0;
-  transition:all 0.25s;
-  pointer-events:none;
-  z-index:100;
-  white-space:nowrap;
-}
-
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-/* RIPPLE */
-.ripple {
-  position:absolute;
-  border-radius:50%;
-  background:rgba(255,255,255,0.15);
-  transform:scale(0);
-  animation:rippleAnim 0.4s linear;
-  pointer-events:none;
-}
-
-@keyframes rippleAnim {
-  to { transform:scale(4); opacity:0; }
-}
-
-@media (max-height: 700px) {
-  .player-score-num { font-size:36px; }
-  .throw-chip-val { font-size:26px; }
-  .num-btn { font-size:22px; }
-}
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -925,101 +25,124 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); col
     <div class="logo-sub">Scorer Pro</div>
   </div>
   <div class="game-grid">
-    <div class="game-card featured" onclick="selectGame('x01')">
+    <div class="game-card featured" data-act="select-game" data-arg="x01">
       <div class="game-icon">🎯</div>
       <div class="game-name">X01</div>
       <div class="game-desc">301 · 501 · 701 · 1001<br>Klassisk nedtelling</div>
     </div>
-    <div class="game-card" onclick="selectGame('cricket')">
+    <div class="game-card" data-act="select-game" data-arg="cricket">
       <div class="game-icon">🏏</div>
       <div class="game-name">Cricket</div>
       <div class="game-desc">Lukk 15–20 og bull<br>Taktisk spill</div>
     </div>
-    <div class="game-card" onclick="selectGame('around')">
+    <div class="game-card" data-act="select-game" data-arg="around">
       <div class="game-icon">🔄</div>
       <div class="game-name">Around<br>the Clock</div>
       <div class="game-desc">Treff 1–20 i rekkefølge</div>
     </div>
-    <div class="game-card" onclick="selectGame('killer')">
+    <div class="game-card" data-act="select-game" data-arg="killer">
       <div class="game-icon">💀</div>
       <div class="game-name">Killer</div>
       <div class="game-desc">Bli killer, eliminer andre</div>
     </div>
+  </div>
+  <div class="home-links">
+    <div class="link-btn" data-act="open-stats">📊 Statistikk</div>
+    <div class="link-btn" data-act="open-settings">⚙️ Innstillinger</div>
   </div>
 </div>
 
 <!-- ===== SETUP ===== -->
 <div id="setup" class="screen">
   <div class="setup-header">
-    <button class="back-btn" onclick="goHome()">←</button>
+    <button class="back-btn" data-act="home">←</button>
     <div class="setup-title" id="setup-title">SPILL OPPSETT</div>
   </div>
   <div class="setup-body">
-    <!-- X01 options -->
-    <div id="x01-options" class="setup-section" style="display:none">
+    <div class="setup-info" id="setup-info"></div>
+
+    <!-- X01 -->
+    <div id="opt-x01" class="setup-section" style="display:none">
       <div class="setup-label">Startsum</div>
-      <div class="score-options">
-        <div class="score-opt selected" data-val="301" onclick="selectScore(this,301)">301</div>
-        <div class="score-opt" data-val="501" onclick="selectScore(this,501)">501</div>
-        <div class="score-opt" data-val="701" onclick="selectScore(this,701)">701</div>
-        <div class="score-opt" data-val="1001" onclick="selectScore(this,1001)">1001</div>
+      <div class="score-options" id="score-options">
+        <div class="score-opt" data-act="score" data-arg="301">301</div>
+        <div class="score-opt" data-act="score" data-arg="501">501</div>
+        <div class="score-opt" data-act="score" data-arg="701">701</div>
+        <div class="score-opt" data-act="score" data-arg="1001">1001</div>
       </div>
       <div class="custom-score-row">
-        <input type="number" class="text-input" id="custom-score" placeholder="Egendefinert..." min="101" max="9999" step="100" oninput="customScore(this)">
+        <input type="number" class="text-input" id="custom-score" placeholder="Egendefinert..." min="101" max="9999" step="100" inputmode="numeric">
       </div>
-      <div class="setup-section">
-        <div class="setup-label" style="margin-top:4px">Regler</div>
-        <div class="checkout-toggle" onclick="toggleDoubleOut()">
-          <div>
-            <div class="toggle-label">Double out</div>
-            <div class="toggle-sub">Må avslutte med et double for å vinne</div>
-          </div>
-          <div class="toggle-switch" id="double-out-toggle">
-            <div class="toggle-knob"></div>
-          </div>
+      <div class="setup-label" style="margin-top:4px">Regler</div>
+      <div class="checkout-toggle" data-act="toggle" data-arg="doubleOut">
+        <div>
+          <div class="toggle-label">Double out</div>
+          <div class="toggle-sub">Må avslutte med et double for å vinne</div>
         </div>
-        <div class="checkout-toggle" onclick="toggleDoubleIn()">
-          <div>
-            <div class="toggle-label">Double in</div>
-            <div class="toggle-sub">Må starte med et double</div>
-          </div>
-          <div class="toggle-switch" id="double-in-toggle">
-            <div class="toggle-knob"></div>
-          </div>
-        </div>
+        <div class="toggle-switch" id="tg-doubleOut"><div class="toggle-knob"></div></div>
       </div>
+      <div class="checkout-toggle" data-act="toggle" data-arg="doubleIn">
+        <div>
+          <div class="toggle-label">Double in</div>
+          <div class="toggle-sub">Må starte med et double</div>
+        </div>
+        <div class="toggle-switch" id="tg-doubleIn"><div class="toggle-knob"></div></div>
+      </div>
+    </div>
+
+    <!-- Around the clock -->
+    <div id="opt-atc" class="setup-section" style="display:none">
+      <div class="setup-label">Regler</div>
+      <div class="checkout-toggle" data-act="toggle" data-arg="skip">
+        <div>
+          <div class="toggle-label">Hopp over tall</div>
+          <div class="toggle-sub">Dobbel flytter deg 2 tall, trippel 3 tall</div>
+        </div>
+        <div class="toggle-switch" id="tg-skip"><div class="toggle-knob"></div></div>
+      </div>
+    </div>
+
+    <!-- Killer -->
+    <div id="opt-killer" class="setup-section" style="display:none">
+      <div class="setup-label">Antall liv</div>
+      <div class="score-options" id="lives-options">
+        <div class="score-opt" data-act="lives" data-arg="3">3</div>
+        <div class="score-opt" data-act="lives" data-arg="5">5</div>
+        <div class="score-opt" data-act="lives" data-arg="7">7</div>
+      </div>
+      <div class="add-player-btn" data-act="rand-nums">🎲 Trekk nye tall</div>
     </div>
 
     <!-- Players -->
     <div class="setup-section">
-      <div class="setup-label">Spillere (maks 8)</div>
+      <div class="setup-label" id="players-label">Spillere (maks 8)</div>
       <div class="player-setup-list" id="player-setup-list"></div>
-      <button class="add-player-btn" onclick="addPlayerSetup()">+ Legg til spiller</button>
+      <button class="add-player-btn" data-act="add-player">+ Legg til spiller</button>
     </div>
   </div>
   <div class="setup-footer">
-    <button class="start-btn" id="start-game-btn" onclick="startGame()">START SPILL</button>
+    <button class="start-btn" data-act="start">START SPILL</button>
   </div>
 </div>
 
-<!-- ===== GAME (X01 / Around / Killer) ===== -->
+<!-- ===== X01 ===== -->
 <div id="game" class="screen">
   <div class="game-header">
-    <button class="back-btn" onclick="confirmQuit()">←</button>
+    <button class="back-btn" data-act="quit">←</button>
     <div class="game-title-bar" id="game-title-bar">501</div>
-    <button class="undo-btn" onclick="undoThrow()">↩ Angre</button>
+    <button class="undo-btn" data-act="undo" data-fast>↩ Angre</button>
   </div>
   <div class="players-bar" id="players-bar"></div>
-  <div class="game-body" id="game-body">
+  <div class="game-body">
     <div class="current-turn-area">
       <div class="turn-info">
         <div class="turn-player-name" id="turn-player-name">Spiller 1</div>
         <div class="turn-dart-num" id="turn-dart-num">PIL 1 AV 3</div>
       </div>
-      <div class="throws-display" id="throws-display">
-        <div class="throw-chip" id="throw0"><div class="throw-chip-label">PIL 1</div><div class="throw-chip-val">—</div></div>
-        <div class="throw-chip" id="throw1"><div class="throw-chip-label">PIL 2</div><div class="throw-chip-val">—</div></div>
-        <div class="throw-chip" id="throw2"><div class="throw-chip-label">PIL 3</div><div class="throw-chip-val">—</div></div>
+      <div class="throws-display">
+        <div class="throw-chip" id="throw0"></div>
+        <div class="throw-chip" id="throw1"></div>
+        <div class="throw-chip" id="throw2"></div>
       </div>
       <div class="turn-total">
         <div class="turn-total-label">Runde total</div>
@@ -1031,27 +154,68 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); col
       <div class="checkout-hint-label">🎯 Checkout</div>
       <div class="checkout-hint-val" id="checkout-hint-val"></div>
     </div>
-    <div class="multiplier-row">
-      <div class="mult-btn selected-mult" data-mult="1" onclick="setMult(1)">ENKEL</div>
-      <div class="mult-btn" data-mult="2" onclick="setMult(2)">DOUBLE</div>
-      <div class="mult-btn" data-mult="3" onclick="setMult(3)">TRIPLE</div>
-    </div>
+    <div class="multiplier-row"></div>
     <div class="numpad" id="numpad"></div>
   </div>
 </div>
 
-<!-- ===== CRICKET GAME ===== -->
+<!-- ===== CRICKET ===== -->
 <div id="cricket-game" class="screen">
   <div class="game-header">
-    <button class="back-btn" onclick="confirmQuit()">←</button>
+    <button class="back-btn" data-act="quit">←</button>
     <div class="game-title-bar">CRICKET</div>
-    <button class="undo-btn" onclick="undoCricket()">↩ Angre</button>
+    <button class="undo-btn" data-act="undo" data-fast>↩ Angre</button>
   </div>
   <div class="players-bar" id="cricket-players-bar"></div>
   <div class="cricket-body">
     <div class="cricket-scoreboard" id="cricket-scoreboard"></div>
     <div class="cricket-score-row" id="cricket-score-row"></div>
+    <div class="multiplier-row" style="padding-top:6px"></div>
     <div class="cricket-numpad" id="cricket-numpad"></div>
+  </div>
+</div>
+
+<!-- ===== AROUND THE CLOCK ===== -->
+<div id="atc-game" class="screen">
+  <div class="game-header">
+    <button class="back-btn" data-act="quit">←</button>
+    <div class="game-title-bar">AROUND THE CLOCK</div>
+    <button class="undo-btn" data-act="undo" data-fast>↩ Angre</button>
+  </div>
+  <div class="players-bar" id="atc-players-bar"></div>
+  <div class="atc-body">
+    <div class="turn-banner">
+      <div class="turn-player-name" id="atc-player-name"></div>
+      <div class="turn-dart-num" id="atc-dart-num"></div>
+    </div>
+    <div class="atc-target">
+      <div class="atc-target-label">Neste mål</div>
+      <div class="atc-target-val" id="atc-target-val">1</div>
+      <div class="atc-progress"><div id="atc-progress-bar"></div></div>
+    </div>
+    <div class="action-grid" id="atc-buttons"></div>
+  </div>
+</div>
+
+<!-- ===== KILLER ===== -->
+<div id="killer-game" class="screen">
+  <div class="game-header">
+    <button class="back-btn" data-act="quit">←</button>
+    <div class="game-title-bar">KILLER</div>
+    <button class="undo-btn" data-act="undo" data-fast>↩ Angre</button>
+  </div>
+  <div class="players-bar" id="killer-players-bar"></div>
+  <div class="kl-body">
+    <div class="turn-banner">
+      <div>
+        <div class="turn-player-name" id="kl-player-name"></div>
+        <div class="player-sub" id="kl-status"></div>
+      </div>
+      <div class="turn-dart-num" id="kl-dart-num"></div>
+    </div>
+    <div style="flex:1"></div>
+    <div class="multiplier-row" style="padding-top:6px"></div>
+    <div class="action-grid" id="killer-buttons"></div>
   </div>
 </div>
 
@@ -1065,627 +229,58 @@ html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); col
   <div class="winner-name" id="winner-name">Spiller</div>
   <div class="winner-stats" id="winner-stats"></div>
   <div class="winner-actions">
-    <button class="winner-btn secondary" onclick="goHome()">🏠 Hjem</button>
-    <button class="winner-btn primary" onclick="rematch()">🔄 Rematch</button>
+    <button class="winner-btn secondary" data-act="home-finish">🏠 Hjem</button>
+    <button class="winner-btn secondary" data-act="undo-win">↩ Angre</button>
+    <button class="winner-btn primary" data-act="rematch">🔄 Rematch</button>
+  </div>
+</div>
+
+<!-- ===== STATISTIKK ===== -->
+<div id="stats" class="screen">
+  <div class="setup-header">
+    <button class="back-btn" data-act="home">←</button>
+    <div class="setup-title">STATISTIKK</div>
+  </div>
+  <div class="setup-body" id="stats-body"></div>
+</div>
+
+<!-- ===== INNSTILLINGER ===== -->
+<div id="settings" class="screen">
+  <div class="setup-header">
+    <button class="back-btn" data-act="home">←</button>
+    <div class="setup-title">INNSTILLINGER</div>
+  </div>
+  <div class="setup-body">
+    <div class="checkout-toggle" data-act="set-toggle" data-arg="sound">
+      <div><div class="toggle-label">Lydeffekter</div><div class="toggle-sub">Klikk, bust og seierslyd</div></div>
+      <div class="toggle-switch" id="st-sound"><div class="toggle-knob"></div></div>
+    </div>
+    <div class="checkout-toggle" data-act="set-toggle" data-arg="voice">
+      <div><div class="toggle-label">Stemme</div><div class="toggle-sub">Roper ut runder på 100 eller mer, bust og vinner</div></div>
+      <div class="toggle-switch" id="st-voice"><div class="toggle-knob"></div></div>
+    </div>
+    <div class="setup-section">
+      <div class="setup-label">Stemmespråk</div>
+      <div class="score-options" id="lang-options">
+        <div class="score-opt" data-act="set-lang" data-arg="en">English</div>
+        <div class="score-opt" data-act="set-lang" data-arg="no">Norsk</div>
+      </div>
+      <div class="add-player-btn" data-act="test-voice">🔊 Test stemmen</div>
+    </div>
+    <div class="checkout-toggle" data-act="set-toggle" data-arg="haptics">
+      <div><div class="toggle-label">Vibrasjon</div><div class="toggle-sub">Kort vibrasjon ved hvert kast</div></div>
+      <div class="toggle-switch" id="st-haptics"><div class="toggle-knob"></div></div>
+    </div>
+    <div class="checkout-toggle" data-act="set-toggle" data-arg="wake">
+      <div><div class="toggle-label">Hold skjermen våken</div><div class="toggle-sub">Skjermen slukker ikke midt i et spill</div></div>
+      <div class="toggle-switch" id="st-wake"><div class="toggle-knob"></div></div>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
-// ========== STATE ==========
-const PLAYER_COLORS = ['#e63946','#4cc9f0','#ffd60a','#2dc653','#f4a261','#a8dadc','#e9c46a','#e76f51'];
-const CHECKOUT_HINTS = {
-  170:['T20','T20','Bull'],170:['T20','T20','Bull'],
-  167:['T20','T19','Bull'],164:['T20','T18','Bull'],161:['T20','T17','Bull'],
-  160:['T20','T20','D20'],158:['T20','T20','D19'],157:['T20','T19','D20'],
-  156:['T20','T20','D18'],155:['T20','T19','D19'],154:['T20','T18','D20'],
-  153:['T20','T19','D18'],152:['T20','T20','D16'],151:['T20','T17','D20'],
-  150:['T20','T18','D18'],149:['T20','T19','D16'],148:['T20','T16','D20'],
-  147:['T20','T17','D18'],146:['T20','T18','D16'],145:['T20','T19','D14'],
-  144:['T20','T20','D12'],143:['T20','T17','D16'],142:['T20','T14','D20'],
-  141:['T20','T19','D12'],140:['T20','T16','D16'],139:['T20','T13','D20'],
-  138:['T20','T18','D12'],137:['T20','T19','D10'],136:['T20','T20','D8'],
-  135:['T20','T17','D12'],134:['T20','T14','D16'],133:['T20','T19','D8'],
-  132:['Bull','T20','D16'],131:['T20','T13','D16'],130:['T20','T18','D8'],
-  129:['T20','T19','D6'],128:['T20','T16','D12'],127:['T20','T17','D8'],
-  126:['T19','T19','D6'],125:['Bull','T20','D15'],124:['T20','T16','D8'],
-  123:['T19','T16','D9'],122:['T18','T18','D7'],121:['T20','T11','D14'],
-  120:['T20','S20','D20'],119:['T19','T12','D13'],118:['T20','S18','D20'],
-  117:['T20','S17','D20'],116:['T20','S16','D20'],115:['T20','S15','D20'],
-  114:['T20','S14','D20'],113:['T20','S13','D20'],112:['T20','S12','D20'],
-  111:['T20','S11','D20'],110:['T20','S10','D20'],109:['T20','S9','D20'],
-  108:['T20','S8','D20'],107:['T19','S18','D16'],106:['T20','S6','D20'],
-  105:['T20','S5','D20'],104:['T20','S4','D20'],103:['T20','S3','D20'],
-  102:['T20','S2','D20'],101:['T17','D25'],100:['T20','D20'],
-  99:['T19','D21'],98:['T20','D19'],97:['T19','D20'],96:['T20','D18'],
-  95:['T19','D19'],94:['T18','D20'],93:['T19','D18'],92:['T20','D16'],
-  91:['T17','D20'],90:['T18','D18'],89:['T19','D16'],88:['T20','D14'],
-  87:['T17','D18'],86:['T18','D16'],85:['T19','D14'],84:['T20','D12'],
-  83:['T17','D16'],82:['T14','D20'],81:['T19','D12'],80:['T20','D10'],
-  79:['T13','D20'],78:['T18','D12'],77:['T19','D10'],76:['T20','D8'],
-  75:['T17','D12'],74:['T14','D16'],73:['T19','D8'],72:['T16','D12'],
-  71:['T13','D16'],70:['T18','D8'],69:['T19','D6'],68:['T20','D4'],
-  67:['T17','D8'],66:['T10','D18'],65:['T19','D4'],64:['T16','D8'],
-  63:['T13','D12'],62:['T10','D16'],61:['T15','D8'],60:['S20','D20'],
-  59:['S19','D20'],58:['S18','D20'],57:['S17','D20'],56:['T16','D4'],
-  55:['S15','D20'],54:['S14','D20'],53:['S13','D20'],52:['T12','D8'],
-  51:['S11','D20'],50:['Bull','D25'],49:['S9','D20'],48:['S16','D16'],
-  47:['S15','D16'],46:['S14','D16'],45:['S13','D16'],44:['S12','D16'],
-  43:['S11','D16'],42:['S10','D16'],41:['S9','D16'],40:['D20'],
-  39:['S7','D16'],38:['D19'],37:['S5','D16'],36:['D18'],35:['S3','D16'],
-  34:['D17'],33:['S1','D16'],32:['D16'],31:['S7','D12'],30:['D15'],
-  29:['S5','D12'],28:['D14'],27:['S3','D12'],26:['D13'],25:['S1','D12'],
-  24:['D12'],23:['S7','D8'],22:['D11'],21:['S5','D8'],20:['D10'],
-  19:['S3','D8'],18:['D9'],17:['S1','D8'],16:['D8'],15:['S7','D4'],
-  14:['D7'],13:['S5','D4'],12:['D6'],11:['S3','D4'],10:['D5'],
-  9:['S1','D4'],8:['D4'],7:['S3','D2'],6:['D3'],5:['S1','D2'],
-  4:['D2'],3:['S1','D1'],2:['D1']
-};
-
-let G = {
-  gameType: '',
-  x01Start: 501,
-  doubleOut: false,
-  doubleIn: false,
-  players: [],
-  currentPlayer: 0,
-  currentThrows: [],
-  multiplier: 1,
-  history: [],
-  startTime: null,
-  totalDarts: 0,
-
-  // Cricket
-  cricketNumbers: [20,19,18,17,16,15,'Bull'],
-  cricketMarks: [],   // [playerIdx][numIdx] = 0,1,2,3
-  cricketScores: [],
-  cricketHistory: [],
-  cricketCurrentPlayer: 0,
-  cricketThrowsLeft: 3,
-};
-
-let setupPlayers = [];
-let selectedGameType = '';
-let setupX01Score = 301;
-
-// ========== HOME ==========
-function selectGame(type) {
-  selectedGameType = type;
-  setupPlayers = [{ name: 'Spiller 1' }, { name: 'Spiller 2' }];
-
-  document.getElementById('x01-options').style.display = type === 'x01' ? '' : 'none';
-
-  const titles = { x01:'X01 OPPSETT', cricket:'CRICKET OPPSETT', around:'AROUND THE CLOCK', killer:'KILLER OPPSETT' };
-  document.getElementById('setup-title').textContent = titles[type] || 'OPPSETT';
-  renderSetupPlayers();
-  showScreen('setup');
-}
-
-function goHome() { showScreen('home'); }
-
-// ========== SETUP ==========
-const SCORE_OPTS = [301,501,701,1001];
-
-function selectScore(el, val) {
-  document.querySelectorAll('.score-opt').forEach(e => e.classList.remove('selected'));
-  el.classList.add('selected');
-  setupX01Score = val;
-  document.getElementById('custom-score').value = '';
-}
-
-function customScore(el) {
-  const v = parseInt(el.value);
-  if (v > 0) {
-    document.querySelectorAll('.score-opt').forEach(e => e.classList.remove('selected'));
-    setupX01Score = v;
-  }
-}
-
-function toggleDoubleOut() {
-  G.doubleOut = !G.doubleOut;
-  document.getElementById('double-out-toggle').classList.toggle('on', G.doubleOut);
-}
-
-function toggleDoubleIn() {
-  G.doubleIn = !G.doubleIn;
-  document.getElementById('double-in-toggle').classList.toggle('on', G.doubleIn);
-}
-
-function renderSetupPlayers() {
-  const list = document.getElementById('player-setup-list');
-  list.innerHTML = setupPlayers.map((p, i) => `
-    <div class="player-setup-row">
-      <div class="player-color-dot" style="background:${PLAYER_COLORS[i%8]}"></div>
-      <input class="player-input" value="${p.name}" placeholder="Spillernavn..." oninput="setupPlayers[${i}].name=this.value" maxlength="14">
-      ${setupPlayers.length > 1 ? `<button class="remove-player-btn" onclick="removeSetupPlayer(${i})">✕</button>` : ''}
-    </div>
-  `).join('');
-}
-
-function addPlayerSetup() {
-  if (setupPlayers.length >= 8) { toast('Maks 8 spillere!'); return; }
-  setupPlayers.push({ name: `Spiller ${setupPlayers.length + 1}` });
-  renderSetupPlayers();
-}
-
-function removeSetupPlayer(i) {
-  setupPlayers.splice(i, 1);
-  renderSetupPlayers();
-}
-
-function startGame() {
-  const names = setupPlayers.map(p => p.name.trim() || `Spiller ${setupPlayers.indexOf(p)+1}`);
-
-  G.gameType = selectedGameType;
-  G.players = names.map((n, i) => ({
-    name: n,
-    color: PLAYER_COLORS[i % 8],
-    score: 0,
-    darts: 0,
-    busted: false,
-    lockedIn: false // for doubleIn
-  }));
-  G.currentPlayer = 0;
-  G.currentThrows = [];
-  G.multiplier = 1;
-  G.history = [];
-  G.startTime = Date.now();
-  G.totalDarts = 0;
-
-  if (G.gameType === 'x01' || G.gameType === 'around' || G.gameType === 'killer') {
-    G.x01Start = G.gameType === 'x01' ? setupX01Score : (G.gameType === 'around' ? 20 : 501);
-    G.players.forEach(p => {
-      p.score = G.gameType === 'around' ? 1 : (G.gameType === 'killer' ? setupX01Score : G.x01Start);
-      p.lockedIn = !G.doubleIn;
-    });
-    buildX01UI();
-    showScreen('game');
-    updateX01UI();
-  } else if (G.gameType === 'cricket') {
-    startCricket();
-  }
-}
-
-// ========== X01 GAME ==========
-function buildX01UI() {
-  // Players bar
-  const bar = document.getElementById('players-bar');
-  bar.innerHTML = G.players.map((p, i) => `
-    <div class="player-score-panel ${i===0?'active-player':''}" id="psp-${i}">
-      <div class="player-score-name">${p.name}</div>
-      <div class="player-score-num" id="psn-${i}" style="color:${i===0?p.color:'var(--text)'}">${G.gameType==='around'?p.score:p.score}</div>
-      <div class="player-turn-score" id="pts-${i}"></div>
-      <div class="player-darts-left" id="pdl-${i}">
-        ${[0,1,2].map(d=>`<div class="dart-dot" id="dd-${i}-${d}"></div>`).join('')}
-      </div>
-    </div>
-  `).join('');
-
-  const title = G.gameType === 'around' ? 'AROUND THE CLOCK' :
-                G.gameType === 'killer' ? 'KILLER' : G.x01Start.toString();
-  document.getElementById('game-title-bar').textContent = title;
-
-  // Numpad
-  buildNumpad();
-}
-
-function buildNumpad() {
-  const numpad = document.getElementById('numpad');
-  const nums = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
-
-  let html = nums.map(n => `
-    <div class="num-btn" onclick="throwDart(${n})" onmousedown="addRipple(event,this)">
-      ${n}
-    </div>
-  `).join('');
-
-  // Special buttons
-  html += `<div class="num-btn bull" onclick="throwDart(25)" onmousedown="addRipple(event,this)">25<div class="num-btn-sub">BULL</div></div>`;
-  html += `<div class="num-btn bullseye" onclick="throwDart(50)" onmousedown="addRipple(event,this)">50<div class="num-btn-sub">BULL</div></div>`;
-  html += `<div class="num-btn miss" onclick="throwDart(0)">MISS</div>`;
-  html += `<div class="num-btn confirm-btn" id="confirm-btn" onclick="confirmTurn()" disabled>✓<div class="num-btn-sub">NESTE</div></div>`;
-  // Fill remaining spots (5 columns × 5 rows = 25 total, used 20+4=24, +1 already = 25)
-
-  numpad.innerHTML = html;
-}
-
-function setMult(m) {
-  G.multiplier = m;
-  document.querySelectorAll('.mult-btn').forEach(b => {
-    b.classList.toggle('selected-mult', parseInt(b.dataset.mult) === m);
-  });
-}
-
-function throwDart(baseVal) {
-  if (G.currentThrows.length >= 3) return;
-  const val = baseVal === 25 || baseVal === 50 ? baseVal : baseVal * G.multiplier;
-  const label = formatThrowLabel(baseVal, G.multiplier);
-  G.currentThrows.push({ val, label, baseVal, mult: G.multiplier });
-
-  const p = G.players[G.currentPlayer];
-  const turnTotal = G.currentThrows.reduce((s, t) => s + t.val, 0);
-  const remaining = p.score - turnTotal;
-
-  // Update throw chips
-  G.currentThrows.forEach((t, i) => {
-    const chip = document.getElementById('throw' + i);
-    chip.className = 'throw-chip filled';
-    chip.innerHTML = `<div class="throw-chip-label">PIL ${i+1}</div><div class="throw-chip-val">${t.label}</div>`;
-    if (remaining < 0 || (G.doubleOut && remaining === 1)) chip.classList.add('bust');
-  });
-
-  document.getElementById('turn-dart-num').textContent = `PIL ${Math.min(G.currentThrows.length+1,3)} AV 3`;
-  document.getElementById('turn-total-val').textContent = turnTotal;
-
-  const remEl = document.getElementById('remaining-info');
-  if (remaining < 0 || (G.doubleOut && remaining === 1)) {
-    remEl.innerHTML = `<div class="bust-warning">💥 BUST!</div>`;
-    // Auto-confirm after bust
-    setTimeout(() => confirmTurn(), 900);
-  } else if (remaining === 0) {
-    remEl.innerHTML = `<div class="remaining-after" style="color:var(--gold);font-size:18px">🏆 VINNER!</div>`;
-    setTimeout(() => confirmTurn(), 600);
-  } else {
-    remEl.innerHTML = `<div class="remaining-after">→ ${remaining} igjen</div>`;
-  }
-
-  // Update dots
-  const dot = document.getElementById(`dd-${G.currentPlayer}-${G.currentThrows.length-1}`);
-  if (dot) dot.classList.add('thrown');
-
-  // Update player panel turn score
-  document.getElementById(`pts-${G.currentPlayer}`).textContent = `Runde: ${turnTotal}`;
-
-  // Checkout hint
-  updateCheckoutHint(remaining);
-
-  // Enable confirm
-  document.getElementById('confirm-btn').disabled = false;
-
-  // Auto-confirm after 3 darts
-  if (G.currentThrows.length === 3) {
-    if (remaining >= 2 || remaining <= 0 || (G.doubleOut && remaining === 1)) {
-      setTimeout(() => confirmTurn(), 1200);
-    }
-  }
-
-  // Reset multiplier
-  setMult(1);
-  G.totalDarts++;
-}
-
-function formatThrowLabel(base, mult) {
-  if (base === 0) return 'MISS';
-  if (base === 50) return 'BULL';
-  if (base === 25) return '25';
-  if (mult === 2) return `D${base}`;
-  if (mult === 3) return `T${base}`;
-  return `${base}`;
-}
-
-function updateCheckoutHint(remaining) {
-  const hint = document.getElementById('checkout-hint');
-  const hintVal = document.getElementById('checkout-hint-val');
-  if (remaining > 0 && remaining <= 170 && CHECKOUT_HINTS[remaining]) {
-    hint.style.display = 'flex';
-    hintVal.textContent = CHECKOUT_HINTS[remaining].join(' → ');
-  } else {
-    hint.style.display = 'none';
-  }
-}
-
-function confirmTurn() {
-  if (G.currentThrows.length === 0) return;
-  const p = G.players[G.currentPlayer];
-  const turnTotal = G.currentThrows.reduce((s, t) => s + t.val, 0);
-  const remaining = p.score - turnTotal;
-
-  G.history.push({
-    player: G.currentPlayer,
-    throws: [...G.currentThrows],
-    prevScore: p.score
-  });
-
-  if (remaining < 0 || (G.doubleOut && remaining === 1)) {
-    // Bust
-    toast('💥 BUST! Ingen poeng denne runden');
-  } else if (remaining === 0) {
-    // Check double out rule
-    const lastThrow = G.currentThrows[G.currentThrows.length - 1];
-    if (G.doubleOut && lastThrow.mult !== 2 && !(lastThrow.baseVal === 50)) {
-      toast('💥 BUST! Må avslutte med Double');
-      clearTurn();
-      nextPlayer();
-      return;
-    }
-    p.score = 0;
-    updateX01UI();
-    showWinner(p);
-    return;
-  } else {
-    p.score = remaining;
-    p.darts += G.currentThrows.length;
-  }
-
-  clearTurn();
-  nextPlayer();
-}
-
-function undoThrow() {
-  if (G.history.length === 0) return;
-  const last = G.history.pop();
-  G.currentPlayer = last.player;
-  G.players[last.player].score = last.prevScore;
-  clearTurn();
-  updateX01UI();
-  toast('↩ Angret siste tur');
-}
-
-function clearTurn() {
-  G.currentThrows = [];
-  [0,1,2].forEach(i => {
-    const chip = document.getElementById('throw' + i);
-    chip.className = 'throw-chip';
-    chip.innerHTML = `<div class="throw-chip-label">PIL ${i+1}</div><div class="throw-chip-val">—</div>`;
-  });
-  document.getElementById('turn-total-val').textContent = '0';
-  document.getElementById('remaining-info').innerHTML = '';
-  document.getElementById('checkout-hint').style.display = 'none';
-  document.getElementById('confirm-btn').disabled = true;
-  setMult(1);
-}
-
-function nextPlayer() {
-  G.currentPlayer = (G.currentPlayer + 1) % G.players.length;
-  updateX01UI();
-}
-
-function updateX01UI() {
-  G.players.forEach((p, i) => {
-    const panel = document.getElementById(`psp-${i}`);
-    const numEl = document.getElementById(`psn-${i}`);
-    const active = i === G.currentPlayer;
-    panel.classList.toggle('active-player', active);
-    numEl.textContent = p.score;
-    numEl.style.color = active ? p.color : 'var(--text)';
-    if (!active) document.getElementById(`pts-${i}`).textContent = '';
-    [0,1,2].forEach(d => {
-      const dot = document.getElementById(`dd-${i}-${d}`);
-      if (dot) dot.classList.remove('thrown');
-    });
-    document.getElementById(`pdl-${i}`).style.display = active ? 'flex' : 'none';
-  });
-  document.getElementById('turn-player-name').textContent = G.players[G.currentPlayer].name;
-  document.getElementById('turn-dart-num').textContent = 'PIL 1 AV 3';
-  const p = G.players[G.currentPlayer];
-  updateCheckoutHint(p.score);
-}
-
-// ========== CRICKET ==========
-const CRICKET_NUMS = [20, 19, 18, 17, 16, 15, 'Bull'];
-
-function startCricket() {
-  const np = G.players.length;
-  G.cricketMarks = Array.from({length:np}, () => Array(7).fill(0));
-  G.cricketScores = Array(np).fill(0);
-  G.cricketCurrentPlayer = 0;
-  G.cricketThrowsLeft = 3;
-  G.cricketHistory = [];
-
-  buildCricketUI();
-  showScreen('cricket-game');
-}
-
-function buildCricketUI() {
-  // Players bar
-  const bar = document.getElementById('cricket-players-bar');
-  bar.innerHTML = G.players.map((p, i) => `
-    <div class="player-score-panel ${i===0?'active-player':''}" id="crpsp-${i}">
-      <div class="player-score-name">${p.name}</div>
-      <div class="player-score-num" id="crpsn-${i}" style="color:${i===0?p.color:'var(--text)'}">0</div>
-    </div>
-  `).join('');
-
-  renderCricketBoard();
-  buildCricketNumpad();
-}
-
-function renderCricketBoard() {
-  const board = document.getElementById('cricket-scoreboard');
-  const np = G.players.length;
-  board.style.gridTemplateRows = `repeat(${CRICKET_NUMS.length},1fr)`;
-
-  board.innerHTML = CRICKET_NUMS.map((num, ni) => `
-    <div class="cricket-row">
-      <div class="cricket-num-cell ${num==='Bull'?'bullseye-row':''}">${num}</div>
-      ${G.players.map((p,pi) => `
-        <div class="cricket-player-cell ${pi===G.cricketCurrentPlayer?'active-col':''}" id="crm-${pi}-${ni}" onclick="cricketMark(${pi},${ni})">
-          <div class="cricket-marks">${renderMarks(G.cricketMarks[pi][ni])}</div>
-        </div>
-      `).join('')}
-    </div>
-  `).join('');
-
-  // Score row
-  const sr = document.getElementById('cricket-score-row');
-  sr.innerHTML = `
-    <div class="cricket-score-cell"><span class="cricket-score-label">PTS</span></div>
-    ${G.players.map((p,i) => `
-      <div class="cricket-score-cell">
-        <div class="cricket-score-label">${p.name}</div>
-        <div class="cricket-score-val" id="cr-score-${i}" style="color:${p.color}">${G.cricketScores[i]}</div>
-      </div>
-    `).join('')}
-  `;
-}
-
-function renderMarks(count) {
-  if (count === 0) return `<span class="cricket-mark empty">·</span>`;
-  if (count === 1) return `<span class="cricket-mark scored">/</span>`;
-  if (count === 2) return `<span class="cricket-mark scored">X</span>`;
-  return `<span class="cricket-mark closed">⊕</span>`;
-}
-
-function buildCricketNumpad() {
-  const numpad = document.getElementById('cricket-numpad');
-  const nums = [20,19,18,17,16,15,'Bull'];
-  numpad.innerHTML = nums.map(n => `
-    <div class="cr-num-btn ${n==='Bull'?'cr-bull':''}" onclick="cricketThrow('${n}')">${n}</div>
-  `).join('') + `<div class="cr-num-btn cr-miss" onclick="cricketThrow('miss')">MISS</div>`;
-}
-
-function cricketThrow(num) {
-  if (G.cricketThrowsLeft <= 0) return;
-
-  const pi = G.cricketCurrentPlayer;
-  const ni = num === 'Bull' ? 6 : CRICKET_NUMS.indexOf(parseInt(num));
-  if (ni === -1 && num !== 'miss') { G.cricketThrowsLeft--; checkCricketAdvance(); return; }
-
-  G.cricketHistory.push({
-    player: pi,
-    numIdx: ni === -1 ? -1 : ni,
-    prevMarks: G.cricketMarks.map(r => [...r]),
-    prevScores: [...G.cricketScores]
-  });
-
-  if (num !== 'miss' && ni >= 0) {
-    const prev = G.cricketMarks[pi][ni];
-    if (prev < 3) {
-      G.cricketMarks[pi][ni] = Math.min(3, prev + 1);
-      // Score if closed and others not
-      if (G.cricketMarks[pi][ni] === 3) {
-        // Check if all others also closed
-        const allClosed = G.players.every((_, oi) => oi === pi || G.cricketMarks[oi][ni] >= 3);
-        if (!allClosed) {
-          // Already closed this turn — no score
-        }
-      } else if (prev === 2) {
-        // Just closed — award nothing yet, but scoring was before close
-      }
-    } else {
-      // Already closed — score if others haven't closed
-      const scoreVal = num === 'Bull' ? 25 : parseInt(num);
-      const anyOpen = G.players.some((_, oi) => oi !== pi && G.cricketMarks[oi][ni] < 3);
-      if (anyOpen) {
-        G.cricketScores[pi] += scoreVal;
-      }
-    }
-  }
-
-  G.cricketThrowsLeft--;
-  renderCricketBoard();
-  updateCricketPlayerBar();
-
-  // Check win
-  const won = checkCricketWin(pi);
-  if (won) {
-    showWinner(G.players[pi]);
-    return;
-  }
-
-  checkCricketAdvance();
-}
-
-function checkCricketWin(pi) {
-  // All numbers closed AND highest score
-  const allClosed = CRICKET_NUMS.every((_, ni) => G.cricketMarks[pi][ni] >= 3);
-  if (!allClosed) return false;
-  const myScore = G.cricketScores[pi];
-  return G.players.every((_, oi) => oi === pi || G.cricketScores[oi] <= myScore);
-}
-
-function checkCricketAdvance() {
-  if (G.cricketThrowsLeft <= 0) {
-    setTimeout(() => {
-      G.cricketCurrentPlayer = (G.cricketCurrentPlayer + 1) % G.players.length;
-      G.cricketThrowsLeft = 3;
-      renderCricketBoard();
-      updateCricketPlayerBar();
-    }, 400);
-  }
-}
-
-function updateCricketPlayerBar() {
-  G.players.forEach((p, i) => {
-    const panel = document.getElementById(`crpsp-${i}`);
-    const num = document.getElementById(`crpsn-${i}`);
-    const active = i === G.cricketCurrentPlayer;
-    panel.classList.toggle('active-player', active);
-    num.textContent = G.cricketScores[i];
-    num.style.color = active ? p.color : 'var(--text)';
-  });
-}
-
-function cricketMark(pi, ni) {
-  // Manual mark tap for current player
-  if (pi !== G.cricketCurrentPlayer) return;
-  const num = CRICKET_NUMS[ni];
-  cricketThrow(num === 'Bull' ? 'Bull' : num.toString());
-}
-
-function undoCricket() {
-  if (G.cricketHistory.length === 0) return;
-  const last = G.cricketHistory.pop();
-  G.cricketMarks = last.prevMarks;
-  G.cricketScores = last.prevScores;
-  renderCricketBoard();
-  updateCricketPlayerBar();
-  toast('↩ Angret');
-}
-
-// ========== WINNER ==========
-function showWinner(player) {
-  document.getElementById('winner-name').textContent = player.name;
-  document.getElementById('winner-name').style.color = player.color || 'var(--gold)';
-  const gameName = G.gameType === 'x01' ? G.x01Start.toString() : G.gameType.toUpperCase();
-  document.getElementById('winner-game-name').textContent = gameName;
-
-  const elapsed = Math.round((Date.now() - G.startTime) / 1000);
-  const mins = Math.floor(elapsed / 60);
-  const secs = elapsed % 60;
-  const avg = G.totalDarts > 0 ? Math.round(G.players.reduce((s,p)=>s+(G.x01Start-p.score),0)/G.totalDarts*3) : 0;
-
-  document.getElementById('winner-stats').innerHTML = `
-    <div class="winner-stat"><span class="winner-stat-label">Spilletid</span><span class="winner-stat-val">${mins}m ${secs}s</span></div>
-    <div class="winner-stat"><span class="winner-stat-label">Piler kastet</span><span class="winner-stat-val">${G.totalDarts}</span></div>
-    <div class="winner-stat"><span class="winner-stat-label">Spillere</span><span class="winner-stat-val">${G.players.length}</span></div>
-  `;
-
-  showScreen('winner');
-}
-
-function rematch() {
-  startGame();
-}
-
-// ========== UTILS ==========
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function confirmQuit() {
-  if (confirm('Avslutte spillet?')) goHome();
-}
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(el._timer);
-  el._timer = setTimeout(() => el.classList.remove('show'), 2200);
-}
-
-function addRipple(e, el) {
-  const r = document.createElement('div');
-  r.className = 'ripple';
-  const rect = el.getBoundingClientRect();
-  const size = Math.max(rect.width, rect.height);
-  r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
-  el.appendChild(r);
-  setTimeout(() => r.remove(), 400);
-}
-</script>
+<script src="checkouts.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
